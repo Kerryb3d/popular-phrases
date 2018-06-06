@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Kerry Blanchard - Homework</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <h2>Sample Text</h2>
+          <textarea id="sampleText" class="form-control" rows="8">The quick brown fox jumped over the lazy dog. The lazy dog, peeved to be labeled lazy, jumped over a snoring turtle. In retaliation the quick brown fox jumped over ten snoring turtles. Then the quick brown fox refueled with some ice cream.</textarea>
+        </div>
+        <br/>
+        <button id="processBtn" class="btn btn-primary">Process Text</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <br/>
+        <div id="phraseContainer" class="form-group" style="display: none">
+          <h2>Popular Phrases</h2>
+          <input class="form-control" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var wordMin = 3,
+        wordMax = 10,
+        result;
+
+			/*
+			* Returns the most commonly used text phrases inside the passed string
+			*
+			* @param: text = string
+			* @returns: string
+			*/
+      function getPopularPhrases(text) {
+        var textBlock = text.split(/[\.,;]/),
+          capturedPhrases = {},
+          popularPhrases = {},
+          numOfPhraseLengths = (wordMax - wordMin) + 1;
+
+        // loop through the textBlock
+        for (var i = 0; i < textBlock.length; i++) {
+          var messageTextBlock = textBlock[i].trim().toLowerCase(),
+            wordArray = messageTextBlock.split(/\s+/);
+
+          // loop through the total possible number of word lengths
+          for (var j = 0; j < numOfPhraseLengths; j++) {
+            var startingIndex = 0,
+              endingIndex = wordMin + j,
+              finishedProcessing = false;
+
+            // loop through the wordArray and find all possible phrases (based on wordMin and wordMax)
+            for (var k = 0; k < wordArray.length; k++) {
+              var phraseArray = wordArray.slice(startingIndex, endingIndex),
+                phrase = phraseArray.join(' ');
+
+              // check if we've hit the end of the textBlock
+              if (phraseArray.length < (endingIndex - startingIndex)) {
+                break;
+              }
+
+              startingIndex++;
+              endingIndex++;
+
+              // check if phrase already exist
+              // if so, increase count by 1
+              // if not, add new entry to capturedPhrases
+              if (typeof capturedPhrases[phrase] !== 'undefined') {
+                capturedPhrases[phrase] = parseInt(capturedPhrases[phrase]) + 1;
+                continue;
+              } else {
+                capturedPhrases[phrase] = 1;
+              }
+
+              // if phrase length is the same as the sentince length, continue to the next textBlock
+              if (phraseArray.length === wordArray.length) {
+                finishedProcessing = true;
+                break;
+              }
+            }
+
+            // check if we need to continue to the next textBlock.
+            if (finishedProcessing) {
+              break;
+            }
+          }
+        }
+
+        // find the phrases used more than once
+        for (var phrase in capturedPhrases) {
+          if (capturedPhrases[phrase] > 1) {
+            popularPhrases[phrase] = capturedPhrases[phrase];
+          }
+        }
+
+        // check and remove smaller phrases if found in larger phrase
+        for (var phrase in popularPhrases) {
+          for (var smallerPhrase in popularPhrases) {
+            var foundSmallerPhrase = phrase.match(smallerPhrase);
+            if (foundSmallerPhrase !== null && phrase.length !== smallerPhrase.length) {
+              delete popularPhrases[smallerPhrase];
+            }
+          }
+        }
+
+        // prepare results
+        result = Object.keys(popularPhrases);
+        if (result.length > 0) {
+          result = result.join(", ");
+        } else {
+          result = "Sorry, no popular phrases were found.";
+        }
+
+        return result;
+      };
+
+      // setup btn event
+      document.querySelector('#processBtn').addEventListener("click", function () {
+        var inputContainer = document.querySelector('#phraseContainer');
+        inputContainer.style.display = "";
+        inputContainer.querySelector('input').value = getPopularPhrases(document.querySelector('#sampleText').value);
+      });
+
+    })();
+  </script>
+</body>
+
+</html>
