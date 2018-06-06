@@ -8,3 +8,5 @@ sentences. Omit a phrase if it is a subset of another, longer phrase, even if th
 occurs more frequently (for example, if “cool and collected” and “calm cool and collected” are
 repeated, do not include “cool and collected” in the returned set). A phrase is repeated if it is used
 two or more times.
+
+[Demo](https://kerryb3d.github.io/popular-phrases/)
